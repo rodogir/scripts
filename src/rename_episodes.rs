@@ -44,7 +44,7 @@ fn create_new_name(name: &str) -> std::borrow::Cow<'_, str> {
     lazy_static! {
         static ref EPISODE_RE: Regex = Regex::new(r"- S(\d\d)E(\d+) -").unwrap();
     }
-    let new_name = EPISODE_RE.replace(name, |caps: &Captures| {
+    EPISODE_RE.replace(name, |caps: &Captures| {
         let season = &caps[1];
         let length = caps[2].chars().count();
         let src_ep = caps[2].parse::<i32>().unwrap();
@@ -57,8 +57,7 @@ fn create_new_name(name: &str) -> std::borrow::Cow<'_, str> {
             second_ep,
             len = length
         )
-    });
-    new_name
+    })
 }
 
 #[cfg(test)]
