@@ -72,11 +72,13 @@ mod test {
     ];
 
     fn setup_test_data() -> Result<(), ExitFailure> {
-        fs::remove_dir_all(TEST_DATA_DIR)?;
+        if path::Path::new(TEST_DATA_DIR).exists() {
+            fs::remove_dir_all(TEST_DATA_DIR)?;
+        }
         fs::create_dir(TEST_DATA_DIR)?;
 
         for file_name in FILE_NAMES {
-            fs::File::create(path::Path::new(&format!("{}/{}", TEST_DATA_DIR, file_name)))?;
+            fs::File::create(&format!("{}/{}", TEST_DATA_DIR, file_name))?;
         }
         Ok(())
     }
@@ -86,7 +88,7 @@ mod test {
         let res_setup = setup_test_data();
         assert!(res_setup.is_ok());
 
-        let dir = fs::read_dir(path::Path::new(TEST_DATA_DIR));
+        let dir = fs::read_dir(TEST_DATA_DIR);
 
         let res = rename_in_dir(dir.unwrap(), false);
         assert!(res.is_ok());
