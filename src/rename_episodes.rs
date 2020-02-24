@@ -5,12 +5,11 @@ use regex::{Captures, Regex};
 use std::{ffi, fs, path};
 
 pub fn run(path: path::PathBuf, write: bool) -> Result<(), ExitFailure> {
-    let path_name = path.clone().into_os_string();
     let is_simulation = !write;
     if is_simulation {
         println!("Simulation mode only!");
     }
-
+    let path_name = path.clone().into_os_string();
     let dir =
         fs::read_dir(path).with_context(|_| format!("Could not find directory {:?}", path_name))?;
     rename_in_dir(dir, is_simulation)?;
@@ -64,6 +63,25 @@ fn create_new_name(name: &str) -> std::borrow::Cow<'_, str> {
 mod test {
     use super::*;
 
+    #[test]
+    fn check_create_new_name() {
+        assert_eq!(
+            create_new_name("TV Show - S01E01 - Title.mkv"),
+            "TV Show - S01E01-E02 - Title.mkv",
+            "first episode"
+        );
+        assert_eq!(
+            create_new_name("TV Show - S01E04 - Title.mkv"),
+            "TV Show - S01E07-E08 - Title.mkv",
+            "non first episode"
+        );
+        assert_eq!(
+            create_new_name("TV Show - S01E01-E02 - Title.mkv"),
+            "TV Show - S01E01-E02 - Title.mkv",
+            "already multi episode"
+        );
+    }
+
     const TEST_DATA_DIR: &str = ".tmp_test_data";
     const FILE_NAMES: &[&str; 3] = &[
         "TV Show - S01E01 - [1080p].mkv",
@@ -101,24 +119,5 @@ mod test {
                 format!("{} was not found", new_path)
             );
         }
-    }
-
-    #[test]
-    fn check_create_new_name() {
-        assert_eq!(
-            "TV Show - S01E01-E02 - Title.mkv",
-            create_new_name("TV Show - S01E01 - Title.mkv"),
-            "first episode"
-        );
-        assert_eq!(
-            "TV Show - S01E07-E08 - Title.mkv",
-            create_new_name("TV Show - S01E04 - Title.mkv"),
-            "non first episode"
-        );
-        assert_eq!(
-            "TV Show - S01E01-E02 - Title.mkv",
-            create_new_name("TV Show - S01E01-E02 - Title.mkv"),
-            "already multi episode"
-        );
     }
 }
