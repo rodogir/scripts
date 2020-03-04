@@ -25,8 +25,23 @@ jobs:
           toolchain: stable
           target: ${{ matrix.target }}
           override: true
-      - uses: actions-rs/cargo@v1
+      - name: "build artifact"
+        uses: actions-rs/cargo@v1
         with:
           use-cross: true
           command: build
           args: --release --target=${{ matrix.target }}
+      - name: "upload artifact"
+        uses: actions/upload-artifact@v1
+        # see https://help.github.com/en/actions/configuring-and-managing-workflows/persisting-workflow-data-using-artifacts#sharing-data-between-workflow-runs
+        with:
+          name: test
+          path: math-homework
+  create-release:
+    name: Release
+    runs-on: [ubuntu-18.04]
+    steps:
+      -  # see: https://github.com/actions/upload-release-asset
+      -  # create new release
+      -  # download all artifacts and upload them to the release
+
