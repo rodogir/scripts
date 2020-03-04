@@ -39,6 +39,7 @@ jobs:
           path: math-homework
   create-release:
     name: Release
+    needs: build
     runs-on: [ubuntu-18.04]
     steps:
       -  # see: https://github.com/actions/upload-release-asset
